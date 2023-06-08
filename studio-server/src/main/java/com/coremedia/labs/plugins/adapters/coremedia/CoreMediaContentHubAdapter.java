@@ -60,7 +60,7 @@ public class CoreMediaContentHubAdapter implements ContentHubAdapter, ContentHub
           "ESDynamicList",
           "CMMarketingSpot",
           "CMExternalChannel",
-          "CMExternalProduct",
+         // "CMExternalProduct",
           "CMExternalPage",
           "CMProductList",
           "CMSelectionRules",
