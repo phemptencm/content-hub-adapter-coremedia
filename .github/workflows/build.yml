@@ -154,3 +154,4 @@ jobs:
         with:
           tag_name: v${{ steps.set-release-version.outputs.version }}
           files: target/bundle/*
+          token: ${{ secrets.CM_NPM_READ_ONLY_PASSWORD }}
