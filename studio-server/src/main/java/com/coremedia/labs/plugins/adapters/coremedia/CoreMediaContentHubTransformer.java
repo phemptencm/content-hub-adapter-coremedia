@@ -45,18 +45,19 @@ public class CoreMediaContentHubTransformer implements ContentHubTransformer {
 
   @Nullable
   @Override
-  public ContentModel transform(Item source, ContentHubAdapter contentHubAdapter, ContentHubContext contentHubContext) {
-    if (!(source instanceof CoreMediaItem)) {
-      throw new IllegalArgumentException("Cannot transform source " + source);
-    }
+    public ContentModel transform(Item source, ContentHubAdapter contentHubAdapter, ContentHubContext contentHubContext) {
+      if (!(source instanceof CoreMediaItem)) {
+        throw new IllegalArgumentException("Cannot transform source " + source);
+      }
 
-    CoreMediaItem item = (CoreMediaItem) source;
-    LOG.info("Creating content model for external content: {} (type={}).", item.getContent(), item.getCoreMediaContentType());
+      CoreMediaItem item = (CoreMediaItem) source;
+      LOG.info("Creating content model for external content: {} (type={}).", item.getContent(), item.getCoreMediaContentType());
 
-    String contentName = source.getName();
-    ContentModel contentModel = ContentModel.createContentModel(contentName, item.getId(), item.getCoreMediaContentType());
-    fillContentModel(contentModel, item.getContent());
+      String contentName = source.getName();
+      ContentModel contentModel = ContentModel.createContentModel(contentName, item.getId(), item.getCoreMediaContentType());
 
+      fillContentModel(contentModel, item.getContent());
+      contentModel.put("derivateOfReference", item.getContent().getUuid().toString());
     return contentModel;
   }
 
