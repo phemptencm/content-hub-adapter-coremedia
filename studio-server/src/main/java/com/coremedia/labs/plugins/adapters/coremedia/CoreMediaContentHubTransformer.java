@@ -51,10 +51,13 @@ public class CoreMediaContentHubTransformer implements ContentHubTransformer {
       }
 
       CoreMediaItem item = (CoreMediaItem) source;
-      LOG.info("Creating content model for external content: {} (type={}).", item.getContent(), item.getCoreMediaContentType());
+      String targetType = item.getCoreMediaContentType();
+      if (targetType.equals("CMKBArticle")) targetType = "CMFAQ";
+
+      LOG.info("Creating content model for external content: {} (type={}).", item.getContent(), targetType);
 
       String contentName = source.getName();
-      ContentModel contentModel = ContentModel.createContentModel(contentName, item.getId(), item.getCoreMediaContentType());
+      ContentModel contentModel = ContentModel.createContentModel(contentName, item.getId(), targetType);
 
       fillContentModel(contentModel, item.getContent());
       contentModel.put("derivateOfReference", item.getContent().getUuid().toString());
