@@ -33,6 +33,8 @@ public class CoreMediaContentHubTransformer implements ContentHubTransformer {
           "resourceBundles",
           "resourceBundles2",
           "subjectTaxonomy",
+          "segmentaxonomy",
+          "channelTaxonomy",
           "templateSets",
           "viewtype"
   );
