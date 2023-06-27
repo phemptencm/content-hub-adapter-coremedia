@@ -36,8 +36,17 @@ public class CoreMediaContentHubTransformer implements ContentHubTransformer {
           "segmentaxonomy",
           "channelTaxonomy",
           "templateSets",
-          "viewtype"
+          "viewtype",
+          "relatedProducts",
+          "relatedAssets",
+          "relatedTC",
+          "relatedArticles",
+          "relatedKBArticles"
   );
+
+  private static final List<String> DIRECT_COPY_PROPERTIES = List.of(
+          "localSettings"
+          );
 
   private final CoreMediaContentHubSettings settings;
 
@@ -47,22 +56,41 @@ public class CoreMediaContentHubTransformer implements ContentHubTransformer {
 
   @Nullable
   @Override
-    public ContentModel transform(Item source, ContentHubAdapter contentHubAdapter, ContentHubContext contentHubContext) {
-      if (!(source instanceof CoreMediaItem)) {
-        throw new IllegalArgumentException("Cannot transform source " + source);
+  public ContentModel transform(Item source, ContentHubAdapter contentHubAdapter, ContentHubContext contentHubContext) {
+    if (!(source instanceof CoreMediaItem)) {
+      throw new IllegalArgumentException("Cannot transform source " + source);
+    }
+
+    CoreMediaItem item = (CoreMediaItem) source;
+    String targetType = item.getCoreMediaContentType();
+    if (targetType.equals("CMKBArticle")) targetType = "CMFAQ";
+
+    LOG.info("Creating content model for external content: {} (type={}).", item.getContent(), targetType);
+
+    String contentName = source.getName();
+    ContentModel contentModel = ContentModel.createContentModel(contentName, item.getId(), targetType);
+
+    fillContentModel(contentModel, item.getContent());
+    contentModel.put("derivateOfReference", item.getContent().getUuid().toString());
+
+    Content content = item.getContent();
+    content.getProperties().forEach((prop, value) -> {
+      if (value != null && DIRECT_COPY_PROPERTIES.contains(prop)) {
+        CapPropertyDescriptor propertyDescriptor = content.getType().getDescriptor(prop);
+        if (propertyDescriptor.getType().equals(CapPropertyDescriptorType.LINK)) {
+          // Create references for links
+          List<Content> linkedContents = content.getLinks(prop);
+          List<ContentModelReference> links = new ArrayList<>();
+          linkedContents.forEach(c -> links.add(ContentModelReference.create(contentModel, c.getType().getName(), c)));
+          contentModel.put(prop, links);
+
+        } else {
+
+          contentModel.put(prop, value);
+        }
       }
+    });
 
-      CoreMediaItem item = (CoreMediaItem) source;
-      String targetType = item.getCoreMediaContentType();
-      if (targetType.equals("CMKBArticle")) targetType = "CMFAQ";
-
-      LOG.info("Creating content model for external content: {} (type={}).", item.getContent(), targetType);
-
-      String contentName = source.getName();
-      ContentModel contentModel = ContentModel.createContentModel(contentName, item.getId(), targetType);
-
-      fillContentModel(contentModel, item.getContent());
-      contentModel.put("derivateOfReference", item.getContent().getUuid().toString());
     return contentModel;
   }
 
