@@ -33,15 +33,11 @@ public class CoreMediaContentHubTransformer implements ContentHubTransformer {
           "resourceBundles",
           "resourceBundles2",
           "subjectTaxonomy",
-          "segmentaxonomy",
+          "segmentTaxonomy",
           "channelTaxonomy",
           "templateSets",
           "viewtype",
-          "relatedProducts",
-          "relatedAssets",
-          "relatedTC",
-          "relatedArticles",
-          "relatedKBArticles"
+          "relatedProducts"
   );
 
   private static final List<String> DIRECT_COPY_PROPERTIES = List.of(
@@ -71,7 +67,7 @@ public class CoreMediaContentHubTransformer implements ContentHubTransformer {
     ContentModel contentModel = ContentModel.createContentModel(contentName, item.getId(), targetType);
 
     fillContentModel(contentModel, item.getContent());
-    contentModel.put("derivateOfReference", item.getContent().getUuid().toString());
+
 
     Content content = item.getContent();
     content.getProperties().forEach((prop, value) -> {
@@ -90,7 +86,7 @@ public class CoreMediaContentHubTransformer implements ContentHubTransformer {
         }
       }
     });
-
+    contentModel.put("derivateOfReference", item.getContent().getUuid().toString());
     return contentModel;
   }
 
